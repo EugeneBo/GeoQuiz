@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">GeoQuiz</string>
+
+    <string name="question_Australia">1. Canberra is the capital of Australia</string>
+    <string name="question_Russia">2. Saint-Petersburg is the capital of Russia?</string>
+    <string name="question_America">3. The Amazon River is the longest river in the Americas?</string>
+    <string name="question_GreatBritain">4. London is the capital of Great Britain?</string>
+    <string name="question_Europe">5. Europe includes 49 counties?</string>
+    <string name="question_Africa">6. Cape Town is the capital of RSA?</string>
+
+    <string name="true_button">TRUE</string>
+    <string name="false_button">FALSE</string>
+    <string name="correct_toast">Correct!</string>
+    <string name="incorrect_toast">Incorrect!</string>
+    <string name="next_button">Next</string>
+    <string name="prev_button">Prev</string>
+
+    <string name="warning_text">R u sure u want to do this?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">Cheat!</string>
+    <string name="judgment_toast">Cheating is wrong!</string>
+
+</resources>
