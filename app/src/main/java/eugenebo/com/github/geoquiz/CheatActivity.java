@@ -1,11 +1,15 @@
 package eugenebo.com.github.geoquiz;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -29,7 +33,6 @@ public class CheatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cheat);
 
 
-
         if (savedInstanceState != null) {
             answerIsTrue = savedInstanceState.getBoolean(EXTRA_ANSWER_IS_TRUE, false);
             buttonClicked = savedInstanceState.getBoolean(EXTRA_BUTTON_CLICKED, false);
@@ -46,9 +49,35 @@ public class CheatActivity extends AppCompatActivity {
                 buttonClicked = true;
                 showAnswer();
 
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                    int cx = showAnswerButton.getWidth() / 2;
+                    int cy = showAnswerButton.getHeight() / 2;
+                    float radius = showAnswerButton.getWidth();
+
+                    Animator animator = ViewAnimationUtils
+                            .createCircularReveal(showAnswerButton, cx, cy, radius, 0);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            showAnswerButton.setVisibility(answerTextView.INVISIBLE);
+                        }
+                    });
+
+                    animator.start();
+                } else showAnswerButton.setVisibility(answerTextView.VISIBLE);
+
+
+
             }
         });
         showAnswer();
+
+
+
     }
 
     public static boolean wasAnswerShown(Intent result) {
@@ -74,6 +103,7 @@ public class CheatActivity extends AppCompatActivity {
             if (answerIsTrue) answerTextView.setText(R.string.true_button);
             else answerTextView.setText(R.string.false_button);
             setAnswerShownResult(true);
+
         }
     }
 
