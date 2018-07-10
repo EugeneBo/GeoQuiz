@@ -19,6 +19,7 @@ public class QuizActivity extends AppCompatActivity {
     private static final String KEY_INDEX1 = "index1";
     private static final String KEY_INDEX2 = "index2";
     private static final String KEY_INDEX3 = "index3";
+    private static final String EXTRA_CHEAT_USED_3_TIMES = "eugenebo.com.github.geoquiz.cjeat_used_3_times";
 
 
     private Button trueButton;
@@ -27,11 +28,13 @@ public class QuizActivity extends AppCompatActivity {
     private Button restartButton;
     private ImageButton nextButton;
     private ImageButton prevButton;
+    private TextView numberOfCheatsTextView;
 
     private TextView questionTextView;
     private int currentQuestionIndex = 0;
     private int numberOfCorrectAnswers = 0;
     private int numberOfAnsweredQuestions = 0;
+    private int numberOfCheatsUsed = 0;
     int toastMessage;
 
     private Question[] questionBank = new Question[]{
@@ -56,6 +59,7 @@ public class QuizActivity extends AppCompatActivity {
             numberOfAnsweredQuestions = savedInstanceState.getInt(KEY_INDEX2);
             numberOfCorrectAnswers = savedInstanceState.getInt(KEY_INDEX3);
             questionBank = (Question[]) getLastCustomNonConfigurationInstance();
+            numberOfCheatsUsed = savedInstanceState.getInt(EXTRA_CHEAT_USED_3_TIMES, 0);
 
         }
         questionTextView = findViewById(R.id.question_text_view);
@@ -65,6 +69,7 @@ public class QuizActivity extends AppCompatActivity {
         prevButton = findViewById(R.id.prev_button);
         restartButton = findViewById(R.id.restart_button);
         cheatButton = findViewById(R.id.cheat_button);
+        numberOfCheatsTextView = findViewById(R.id.number_of_cheats_text_view);
 
 
         trueButton.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +112,7 @@ public class QuizActivity extends AppCompatActivity {
                 currentQuestionIndex = 0;
                 numberOfCorrectAnswers = 0;
                 numberOfAnsweredQuestions = 0;
+                numberOfCheatsUsed = 0;
                 questionTextView.setTextColor(getResources().getColor(R.color.answer_text_view));
                 for (Question question : questionBank) {
                     question.setAnswered(false);
@@ -161,11 +167,17 @@ public class QuizActivity extends AppCompatActivity {
 
     private void updateQuestion() {
 
+        Log.d(TAG, "UpdateQuestion() Number of cheats used: " + numberOfCheatsUsed);
+
+
         if (isAllQuestionsAnswered()) {
             showScore();
         } else {
             int question = questionBank[currentQuestionIndex].getTextResId();
+
             questionTextView.setText(question);
+            String numberOfCheats = String.valueOf(3 - numberOfCheatsUsed);
+            numberOfCheatsTextView.setText(numberOfCheats);
         }
 
         if (questionBank[currentQuestionIndex].isAnswered()) setButtonsDisabled();
@@ -177,6 +189,11 @@ public class QuizActivity extends AppCompatActivity {
         if (currentQuestionIndex == (questionBank.length - 1) || isAllQuestionsAnswered())
             nextButton.setEnabled(false);
         else nextButton.setEnabled(true);
+
+        if (numberOfCheatsUsed >= 3) {
+            cheatButton.setEnabled(false);
+        }
+
 
     }
 
@@ -223,15 +240,16 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i(TAG, "onSavedInstanceState");
+        Log.d(TAG, "onSavedInstanceState");
         outState.putInt(KEY_INDEX1, currentQuestionIndex);
         outState.putInt(KEY_INDEX2, numberOfAnsweredQuestions);
         outState.putInt(KEY_INDEX3, numberOfCorrectAnswers);
+        outState.putInt(EXTRA_CHEAT_USED_3_TIMES, numberOfCheatsUsed);
     }
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
-        Log.i(TAG, "onRetainCustomNonConfigurationInstance");
+        Log.d(TAG, "onRetainCustomNonConfigurationInstance");
         return questionBank;
     }
 
@@ -246,6 +264,8 @@ public class QuizActivity extends AppCompatActivity {
         falseButton.setEnabled(true);
         trueButton.setEnabled(true);
         cheatButton.setEnabled(true);
+
+
     }
 
     private void showScore() {
@@ -266,6 +286,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {  // this method calls when user click "back" button
+        Log.d(TAG, "onActivityResult");
         if (resultCode != Activity.RESULT_OK) return;
 
         if (requestCode == REQUEST_CODE_CHEAT) {
@@ -273,6 +294,7 @@ public class QuizActivity extends AppCompatActivity {
                 return;
             }
             questionBank[currentQuestionIndex].setCheated(CheatActivity.wasAnswerShown(intent));
+            numberOfCheatsUsed++;
         }
     }
 }

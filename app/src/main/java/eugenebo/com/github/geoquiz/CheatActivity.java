@@ -18,12 +18,13 @@ public class CheatActivity extends AppCompatActivity {
     private static final String EXTRA_ANSWER_IS_TRUE = "eugenebo.com.github.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "eugenebo.com.github.geoquiz.answer_shown";
     private static final String EXTRA_BUTTON_CLICKED = "eugenebo.com.github.geoquiz.button_clicked";
+    private static final String TAG = "CheatActivity";
 
     private boolean answerIsTrue;
 
     private Button showAnswerButton;
     private TextView answerTextView;
-
+    private TextView apiLevelTextView;
     private boolean buttonClicked = false;
 
     @Override
@@ -32,23 +33,28 @@ public class CheatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
+        showAnswerButton = findViewById(R.id.show_answer_button);
+        answerTextView = findViewById(R.id.answer_text_view);
+        apiLevelTextView = findViewById(R.id.api_level_textView);
+
+        apiLevelTextView.setText(getAppApiLevel());
 
         if (savedInstanceState != null) {
             answerIsTrue = savedInstanceState.getBoolean(EXTRA_ANSWER_IS_TRUE, false);
             buttonClicked = savedInstanceState.getBoolean(EXTRA_BUTTON_CLICKED, false);
 
-        } else answerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
+        } else {
+            answerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
+        }
 
-        showAnswerButton = findViewById(R.id.show_answer_button);
-        answerTextView = findViewById(R.id.answer_text_view);
 
         showAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonClicked = true;
-                showAnswer();
 
+                showAnswer();
 
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -63,19 +69,17 @@ public class CheatActivity extends AppCompatActivity {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            showAnswerButton.setVisibility(answerTextView.INVISIBLE);
+                            showAnswerButton.setVisibility(View.INVISIBLE);
                         }
                     });
 
                     animator.start();
-                } else showAnswerButton.setVisibility(answerTextView.VISIBLE);
-
+                } else showAnswerButton.setVisibility(View.VISIBLE);
 
 
             }
         });
         showAnswer();
-
 
 
     }
@@ -113,6 +117,12 @@ public class CheatActivity extends AppCompatActivity {
         outState.putBoolean(EXTRA_ANSWER_IS_TRUE, answerIsTrue);
         outState.putBoolean(EXTRA_BUTTON_CLICKED, buttonClicked);
 
-
+        Log.d(TAG, "onSavedInstanceState");
     }
+
+    private String getAppApiLevel() {
+        return "API Level: " + Build.VERSION.SDK_INT;
+    }
+
+
 }
